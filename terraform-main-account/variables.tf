@@ -2,6 +2,14 @@ variable "organization" {
   default = "swz"
 }
 
+variable "github_token" {
+  description = "Github token"
+}
+
+variable "github_owner" {
+  description = "Github owner"
+}
+
 variable "aws_region" {
   default = "eu-central-1"
 }
