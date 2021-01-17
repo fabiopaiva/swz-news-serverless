@@ -1,10 +1,10 @@
 locals {
-  production_account_name = format("%s-news-production", var.organization)
+  production_project_name = format("%s-news-production", var.organization)
 }
 
 resource "aws_organizations_account" "swz_news_production_account" {
-  name      = local.production_account_name
-  email     = format(var.admin_email_pattern, local.production_account_name)
+  name      = local.production_project_name
+  email     = format(var.admin_email_pattern, local.production_project_name)
   role_name = "OrganizationAccountAccessRole"
 
   lifecycle {
