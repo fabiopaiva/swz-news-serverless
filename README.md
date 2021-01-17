@@ -1,9 +1,3 @@
 # SWZ News project
 
-## Administrative setup
-
-### Setup AWS Main account
-...
-### Setup Github repository
-
-Confirm AWS CodeStar connection
+[AWS root account setup](terraform-main-account/README.md) 

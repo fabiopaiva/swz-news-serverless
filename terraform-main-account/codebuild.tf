@@ -39,7 +39,7 @@ resource "aws_codebuild_project" "swz_news_terraform_plan" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "tf-plan-buildspec.yml"
+    buildspec = "terraform-main-account/tf-plan-buildspec.yml"
   }
 }
 
@@ -80,6 +80,6 @@ resource "aws_codebuild_project" "swz_news_terraform_apply" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "tf-apply-buildspec.yml"
+    buildspec = "terraform-main-account/tf-apply-buildspec.yml"
   }
 }

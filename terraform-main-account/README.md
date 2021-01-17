@@ -6,6 +6,7 @@ The goal of this configuration directory is to provide the initial setup on AWS/
 * S3 buckets to store Terraform state files
 * DynamoDb Lock tables to lock Terraform state
 * Code pipeline webhook
+* CodePipeline and CodeBuild for Terraform configuring child account
 
 ## Chicken or the egg dilemma
 

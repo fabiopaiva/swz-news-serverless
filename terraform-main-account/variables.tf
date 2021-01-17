@@ -21,7 +21,3 @@ variable "aws_region" {
 variable "admin_email_pattern" {
   default = "fabio+%s@paiva.info"
 }
-
-variable "pipeline_runner_aws_account_id" {
-  default = "461719735338"
-}
