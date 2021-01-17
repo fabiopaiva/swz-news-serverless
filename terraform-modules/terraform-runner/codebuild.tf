@@ -29,7 +29,7 @@ resource "aws_codebuild_project" "terraform_plan" {
     dynamic "environment_variable" {
       for_each = var.terraform_environment_variables
       content {
-        name  = environment_variable.value["name"]
+        name  = format("TF_VAR_%s", environment_variable.value["name"])
         value = environment_variable.value["value"]
       }
     }
@@ -56,7 +56,7 @@ resource "aws_codebuild_project" "terraform_plan" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = format("%s/tf-plan-buildspec.yml", path.module)
+    buildspec = "terraform-modules/terraform-runner/tf-plan-buildspec.yml"
   }
 
   tags = var.tags
@@ -88,7 +88,7 @@ resource "aws_codebuild_project" "terraform_apply" {
     dynamic "environment_variable" {
       for_each = var.terraform_environment_variables
       content {
-        name  = environment_variable.value["name"]
+        name  = format("TF_VAR_%s", environment_variable.value["name"])
         value = environment_variable.value["value"]
       }
     }
@@ -115,7 +115,7 @@ resource "aws_codebuild_project" "terraform_apply" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = format("%s/tf-apply-buildspec.yml", path.module)
+    buildspec = "terraform-modules/terraform-runner/tf-apply-buildspec.yml"
   }
 
   tags = var.tags

@@ -3,10 +3,11 @@ locals {
 }
 
 module "swz_news_terraform" {
-  source = "./modules/terraform-runner"
+  source = "../terraform-modules/terraform-runner"
 
   terraform_directory                = "./terraform"
   terraform_project_workspace        = local.terraform_swz_news_prd_name
+  kms_arn                            = aws_kms_key.swz_key.arn
   kms_alias_arn                      = aws_kms_alias.swz_key.arn
   terraform_state_bucket_arn         = aws_s3_bucket.terraform_state.arn
   terraform_state_dynamodb_table_arn = aws_dynamodb_table.terraform_state_lock.arn

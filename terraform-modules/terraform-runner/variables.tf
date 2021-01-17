@@ -5,8 +5,8 @@ variable "tags" {
 
 variable "terraform_directory" {
   type        = string
-  description = "The directory path for terraform configuration. Default is root directory"
-  default     = null
+  description = "The directory path for terraform configuration. Default is . "
+  default     = "."
 }
 
 variable "terraform_project_workspace" {
@@ -19,8 +19,13 @@ variable "terraform_environment_variables" {
     name  = string
     value = string
   }))
-  description = "Environemnt variables to pass to Terraform"
+  description = "Environemnt variables to pass to Terraform. No need adding the prefix TF_VAR"
   default     = []
+}
+
+variable "kms_arn" {
+  type        = string
+  description = "KMS ARN for S3 encryption"
 }
 
 variable "kms_alias_arn" {

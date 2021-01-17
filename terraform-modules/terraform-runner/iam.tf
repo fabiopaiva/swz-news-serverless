@@ -60,7 +60,6 @@ data "aws_iam_policy_document" "terraform_pipeline_policy" {
     actions = [
       "s3:DeleteObject",
       "s3:GetObject*",
-      "s3:ListBucket",
       "s3:PutObject*",
     ]
     resources = [
@@ -122,7 +121,7 @@ data "aws_iam_policy_document" "terraform_pipeline_policy" {
     sid    = "AllowAccessToTheKMSKey"
     effect = "Allow"
 
-    resources = [var.kms_alias_arn]
+    resources = [var.kms_arn]
 
     actions = [
       "kms:DescribeKey",
