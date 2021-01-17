@@ -3,19 +3,65 @@ resource "aws_codebuild_project" "swz_news_terraform_plan" {
   build_timeout  = 60
   name           = format("%s-terraform-plan", local.production_project_name)
   queued_timeout = 480
-  service_role   = aws_iam_role.swz_news_pipeline_role.arn
+  service_role   = aws_iam_role.terraform_pipeline_role.arn
 
   artifacts {
-    encryption_disabled    = false
-    name                   = "terraform-plan"
-    override_artifact_name = false
-    packaging              = "NONE"
-    type                   = "CODEPIPELINE"
+    type = "CODEPIPELINE"
+  }
+
+  cache {
+    type     = "S3"
+    location = aws_s3_bucket.pipeline_bucket.bucket
   }
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/amazonlinux2-x86_64-standard:2.0"
+    image                       = "hashicorp/terraform:0.13.6"
+    image_pull_credentials_type = "CODEBUILD"
+    privileged_mode             = false
+    type                        = "LINUX_CONTAINER"
+    environment_variable {
+      name = "TERRAFORM_WORKSPACE"
+      value = "swz-news-prd"
+    }
+  }
+
+  logs_config {
+    cloudwatch_logs {
+      status = "ENABLED"
+    }
+
+    s3_logs {
+      encryption_disabled = false
+      status              = "DISABLED"
+    }
+  }
+
+  source {
+    type      = "CODEPIPELINE"
+    buildspec = "tf-plan-buildspec.yml"
+  }
+}
+
+resource "aws_codebuild_project" "swz_news_terraform_apply" {
+  badge_enabled  = false
+  build_timeout  = 60
+  name           = format("%s-terraform-apply", local.production_project_name)
+  queued_timeout = 480
+  service_role   = aws_iam_role.terraform_pipeline_role.arn
+
+  artifacts {
+    type = "CODEPIPELINE"
+  }
+
+  cache {
+    type     = "S3"
+    location = aws_s3_bucket.pipeline_bucket.bucket
+  }
+
+  environment {
+    compute_type                = "BUILD_GENERAL1_SMALL"
+    image                       = "hashicorp/terraform:0.13.6"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = false
     type                        = "LINUX_CONTAINER"
@@ -33,9 +79,7 @@ resource "aws_codebuild_project" "swz_news_terraform_plan" {
   }
 
   source {
-    git_clone_depth     = 0
-    insecure_ssl        = false
-    report_build_status = false
-    type                = "CODEPIPELINE"
+    type      = "CODEPIPELINE"
+    buildspec = "tf-apply-buildspec.yml"
   }
 }

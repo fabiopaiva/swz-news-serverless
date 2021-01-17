@@ -5,7 +5,7 @@ data "aws_iam_policy_document" "serverless_deployment_role" {
 
     principals {
       type        = "AWS"
-      identifiers = [var.pipeline_runner_aws_account_id]
+      identifiers = [format("arn:aws:iam::%s:root", var.pipeline_runner_aws_account_id)]
     }
   }
 }

@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - cd terraform
+      - terraform init -input=false
+      - terraform workspace select $TERRAFORM_WORKSPACE
+      - terraform validate
+      - terraform plan -input=false
+artifacts:
+  files:
+    - '**/*'

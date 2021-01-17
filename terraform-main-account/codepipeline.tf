@@ -2,9 +2,9 @@ locals {
   codepipeline_name = format("%s-pipeline", local.production_project_name)
 }
 
-resource "aws_codepipeline" "swz_news_pipeline" {
-  name     = local.codepipeline_name
-  role_arn = aws_iam_role.swz_news_pipeline_role.arn
+resource "aws_codepipeline" "terraform_swz_news_pipeline" {
+  name     = format("terraform-%s", local.codepipeline_name)
+  role_arn = aws_iam_role.terraform_pipeline_role.arn
 
   artifact_store {
     location = aws_s3_bucket.pipeline_bucket.bucket
@@ -52,6 +52,34 @@ resource "aws_codepipeline" "swz_news_pipeline" {
       }
     }
   }
+
+  stage {
+    name = "TerraformApply"
+
+    action {
+      name      = "Confirm"
+      category  = "Approval"
+      owner     = "AWS"
+      provider  = "Manual"
+      version   = "1"
+      run_order = 1
+    }
+
+    action {
+      name             = "Apply"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["BuildArtifact"]
+      output_artifacts = []
+      version          = "1"
+      run_order        = 2
+
+      configuration = {
+        ProjectName = aws_codebuild_project.swz_news_terraform_apply.name
+      }
+    }
+  }
 }
 
 resource "aws_codestarconnections_connection" "swz_news_pipeline_connection" {
@@ -63,7 +91,7 @@ resource "aws_codepipeline_webhook" "swz_news_pipeline_webhook" {
   authentication  = "GITHUB_HMAC"
   name            = format("%s-webhook", local.codepipeline_name)
   target_action   = "Source"
-  target_pipeline = aws_codepipeline.swz_news_pipeline.name
+  target_pipeline = aws_codepipeline.terraform_swz_news_pipeline.name
 
   authentication_configuration {
     secret_token = random_string.github_secret.result
