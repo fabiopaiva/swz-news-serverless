@@ -1,9 +1,5 @@
-locals {
-  codepipeline_name = format("%s-pipeline", local.production_project_name)
-}
-
-resource "aws_codepipeline" "terraform_swz_news_pipeline" {
-  name     = format("terraform-%s", local.codepipeline_name)
+resource "aws_codepipeline" "terraform_pipeline" {
+  name     = format("terraform-pipeline-%s", var.terraform_project_workspace)
   role_arn = aws_iam_role.terraform_pipeline_role.arn
 
   artifact_store {
@@ -11,7 +7,7 @@ resource "aws_codepipeline" "terraform_swz_news_pipeline" {
     type     = "S3"
 
     encryption_key {
-      id   = aws_kms_alias.swz_key.arn
+      id   = var.kms_alias_arn
       type = "KMS"
     }
   }
@@ -22,15 +18,15 @@ resource "aws_codepipeline" "terraform_swz_news_pipeline" {
     action {
       category = "Source"
       configuration = {
-        ConnectionArn    = aws_codestarconnections_connection.swz_news_pipeline_connection.arn
-        FullRepositoryId = format("%s/%s", var.github_owner, github_repository.swz_news.name)
-        BranchName       = var.repository_main_branch
+        ConnectionArn    = var.source_action_configuration.ConnectionArn
+        FullRepositoryId = var.source_action_configuration.FullRepositoryId
+        BranchName       = var.source_action_configuration.BranchName
       }
       input_artifacts  = []
       name             = "Source"
       output_artifacts = ["SourceArtifact"]
-      owner            = "AWS"
-      provider         = "CodeStarSourceConnection"
+      owner            = var.source_action_owner
+      provider         = var.source_action_provider
       version          = "1"
     }
   }
@@ -48,7 +44,7 @@ resource "aws_codepipeline" "terraform_swz_news_pipeline" {
       version          = "1"
 
       configuration = {
-        ProjectName = aws_codebuild_project.swz_news_terraform_plan.name
+        ProjectName = aws_codebuild_project.terraform_plan.name
       }
     }
   }
@@ -76,13 +72,10 @@ resource "aws_codepipeline" "terraform_swz_news_pipeline" {
       run_order        = 2
 
       configuration = {
-        ProjectName = aws_codebuild_project.swz_news_terraform_apply.name
+        ProjectName = aws_codebuild_project.terraform_apply.name
       }
     }
   }
-}
 
-resource "aws_codestarconnections_connection" "swz_news_pipeline_connection" {
-  name          = format("%s-prd-connection", var.organization)
-  provider_type = "GitHub"
+  tags = var.tags
 }

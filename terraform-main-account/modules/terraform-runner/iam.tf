@@ -10,31 +10,18 @@ data "aws_iam_policy_document" "terraform_pipeline_role" {
       type = "Service"
     }
   }
-
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "AWS"
-      identifiers = [format("arn:aws:iam::%s:root", aws_organizations_account.swz_news_production_account.id)]
-    }
-  }
 }
 
 resource "aws_iam_role" "terraform_pipeline_role" {
-  name = format("%s-terraform-role", local.codepipeline_name)
+  name = format("terraform-role-%s", var.terraform_project_workspace)
 
   assume_role_policy = data.aws_iam_policy_document.terraform_pipeline_role.json
+
+  tags = var.tags
 }
 
 data "aws_iam_policy_document" "terraform_pipeline_policy" {
-  // Permissions to change child account
-  statement {
-    effect    = "Allow"
-    actions   = ["sts:AssumeRole"]
-    resources = [format("arn:aws:iam::%s:role/OrganizationAccountAccessRole", aws_organizations_account.swz_news_production_account.id)]
-  }
-  // Grant permission to swz-nes-prd workspace
+  // Terraform state management configuration
   statement {
     effect = "Allow"
     actions = [
@@ -42,8 +29,8 @@ data "aws_iam_policy_document" "terraform_pipeline_policy" {
       "s3:ListBucket",
     ]
     resources = [
-      aws_s3_bucket.terraform_state.arn,
-      format("%s/*", aws_s3_bucket.terraform_state.arn)
+      var.terraform_state_bucket_arn,
+      format("%s/*", var.terraform_state_bucket_arn)
     ]
   }
   statement {
@@ -52,7 +39,7 @@ data "aws_iam_policy_document" "terraform_pipeline_policy" {
       "s3:PutObject*",
     ]
     resources = [
-      format("%s/env:/swz-news-prd/*", aws_s3_bucket.terraform_state.arn)
+      format("%s/env:/%s/*", var.terraform_state_bucket_arn, var.terraform_project_workspace)
     ]
   }
 
@@ -63,8 +50,10 @@ data "aws_iam_policy_document" "terraform_pipeline_policy" {
       "dynamodb:PutItem",
       "dynamodb:DeleteItem",
     ]
-    resources = [aws_dynamodb_table.terraform_state_lock.arn]
+    resources = [var.terraform_state_dynamodb_table_arn]
   }
+
+  // Pipeline artifacts configuration
 
   statement {
     effect = "Allow"
@@ -100,17 +89,20 @@ data "aws_iam_policy_document" "terraform_pipeline_policy" {
       "codebuild:StartBuild"
     ]
     resources = [
-      aws_codebuild_project.swz_news_terraform_plan.arn,
-      aws_codebuild_project.swz_news_terraform_apply.arn
+      aws_codebuild_project.terraform_plan.arn,
+      aws_codebuild_project.terraform_apply.arn
     ]
   }
 
-  statement {
-    effect = "Allow"
-    actions = [
-      "codestar-connections:UseConnection"
-    ]
-    resources = [aws_codestarconnections_connection.swz_news_pipeline_connection.arn]
+  dynamic "statement" {
+    for_each = compact([var.codestar_connection_arn])
+    content {
+      effect = "Allow"
+      actions = [
+        "codestar-connections:UseConnection"
+      ]
+      resources = [statement.value]
+    }
   }
 
   statement {
@@ -130,9 +122,7 @@ data "aws_iam_policy_document" "terraform_pipeline_policy" {
     sid    = "AllowAccessToTheKMSKey"
     effect = "Allow"
 
-    resources = [
-      aws_kms_key.swz_key.arn,
-    ]
+    resources = [var.kms_alias_arn]
 
     actions = [
       "kms:DescribeKey",
@@ -148,7 +138,7 @@ data "aws_iam_policy_document" "terraform_pipeline_policy" {
 }
 
 resource "aws_iam_role_policy" "terraform_pipeline_policy" {
-  name = format("%s-policy", local.codepipeline_name)
+  name = format("terraform-policy-%s", var.terraform_project_workspace)
   role = aws_iam_role.terraform_pipeline_role.id
 
   policy = data.aws_iam_policy_document.terraform_pipeline_policy.json

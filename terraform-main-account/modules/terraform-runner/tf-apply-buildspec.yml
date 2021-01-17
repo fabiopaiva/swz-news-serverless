@@ -3,5 +3,5 @@ version: 0.2
 phases:
   build:
     commands:
-      - cd terraform
+      - if [ -z $TERRAFORM_DIRECTORY] then cd $TERRAFORM_DIRECTORY; fi
       - terraform apply -auto-approve

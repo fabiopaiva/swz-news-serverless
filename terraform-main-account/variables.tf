@@ -17,3 +17,10 @@ variable "aws_region" {
 variable "admin_email_pattern" {
   default = "fabio+%s@paiva.info"
 }
+
+locals {
+  tags = {
+    Workspace = terraform.workspace
+    Project   = "swz"
+  }
+}

@@ -1,7 +1,7 @@
-resource "aws_codebuild_project" "swz_news_terraform_plan" {
+resource "aws_codebuild_project" "terraform_plan" {
   badge_enabled  = false
   build_timeout  = 60
-  name           = format("%s-terraform-plan", local.production_project_name)
+  name           = format("terraform-plan-%s", var.terraform_project_workspace)
   queued_timeout = 480
   service_role   = aws_iam_role.terraform_pipeline_role.arn
 
@@ -20,19 +20,26 @@ resource "aws_codebuild_project" "swz_news_terraform_plan" {
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = false
     type                        = "LINUX_CONTAINER"
+
     environment_variable {
       name  = "TERRAFORM_WORKSPACE"
-      value = "swz-news-prd"
+      value = var.terraform_project_workspace
     }
 
-    environment_variable {
-      name  = "TF_VAR_github_owner"
-      value = var.github_owner
+    dynamic "environment_variable" {
+      for_each = var.terraform_environment_variables
+      content {
+        name  = environment_variable.value["name"]
+        value = environment_variable.value["value"]
+      }
     }
 
-    environment_variable {
-      name  = "TF_VAR_github_repo"
-      value = github_repository.swz_news.name
+    dynamic "environment_variable" {
+      for_each = compact([var.terraform_directory])
+      content {
+        name  = "TERRAFORM_DIRECTORY"
+        value = environment_variable.value
+      }
     }
   }
 
@@ -49,14 +56,16 @@ resource "aws_codebuild_project" "swz_news_terraform_plan" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "terraform-main-account/tf-plan-buildspec.yml"
+    buildspec = format("%s/tf-plan-buildspec.yml", path.module)
   }
+
+  tags = var.tags
 }
 
-resource "aws_codebuild_project" "swz_news_terraform_apply" {
+resource "aws_codebuild_project" "terraform_apply" {
   badge_enabled  = false
   build_timeout  = 60
-  name           = format("%s-terraform-apply", local.production_project_name)
+  name           = format("terraform-apply-%s", var.terraform_project_workspace)
   queued_timeout = 480
   service_role   = aws_iam_role.terraform_pipeline_role.arn
 
@@ -76,14 +85,20 @@ resource "aws_codebuild_project" "swz_news_terraform_apply" {
     privileged_mode             = false
     type                        = "LINUX_CONTAINER"
 
-    environment_variable {
-      name  = "TF_VAR_github_owner"
-      value = var.github_owner
+    dynamic "environment_variable" {
+      for_each = var.terraform_environment_variables
+      content {
+        name  = environment_variable.value["name"]
+        value = environment_variable.value["value"]
+      }
     }
 
-    environment_variable {
-      name  = "TF_VAR_github_repo"
-      value = github_repository.swz_news.name
+    dynamic "environment_variable" {
+      for_each = compact([var.terraform_directory])
+      content {
+        name  = "TERRAFORM_DIRECTORY"
+        value = environment_variable.value
+      }
     }
   }
 
@@ -100,6 +115,8 @@ resource "aws_codebuild_project" "swz_news_terraform_apply" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "terraform-main-account/tf-apply-buildspec.yml"
+    buildspec = format("%s/tf-apply-buildspec.yml", path.module)
   }
+
+  tags = var.tags
 }
