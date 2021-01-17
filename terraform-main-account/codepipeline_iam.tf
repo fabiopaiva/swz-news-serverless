@@ -30,9 +30,9 @@ resource "aws_iam_role" "terraform_pipeline_role" {
 data "aws_iam_policy_document" "terraform_pipeline_policy" {
   // Permissions to change child account
   statement {
-    effect = "Allow"
-    actions = ["sts:AssumeRole"]
-    resources = [format("arn:aws:iam::%s:role/OrganizationAccountAccessRole", aws_organizations_account.swz_news_production_account.id )]
+    effect    = "Allow"
+    actions   = ["sts:AssumeRole"]
+    resources = [format("arn:aws:iam::%s:role/OrganizationAccountAccessRole", aws_organizations_account.swz_news_production_account.id)]
   }
   // Grant permission to swz-nes-prd workspace
   statement {

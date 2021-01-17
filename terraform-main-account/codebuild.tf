@@ -21,8 +21,23 @@ resource "aws_codebuild_project" "swz_news_terraform_plan" {
     privileged_mode             = false
     type                        = "LINUX_CONTAINER"
     environment_variable {
-      name = "TERRAFORM_WORKSPACE"
+      name  = "TERRAFORM_WORKSPACE"
       value = "swz-news-prd"
+    }
+
+    environment_variable {
+      name  = "TF_VAR_github_owner"
+      value = var.github_owner
+    }
+
+    environment_variable {
+      name  = "TF_VAR_github_repo"
+      value = github_repository.swz_news.name
+    }
+
+    environment_variable {
+      name  = "TF_VAR_github_secret"
+      value = random_string.github_secret.result
     }
   }
 
