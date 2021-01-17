@@ -31,6 +31,7 @@ resource "aws_codebuild_project" "terraform_plan" {
       content {
         name  = format("TF_VAR_%s", environment_variable.value["name"])
         value = environment_variable.value["value"]
+        type  = lookup(environment_variable.value, "type", "PLAINTEXT")
       }
     }
 
@@ -90,6 +91,7 @@ resource "aws_codebuild_project" "terraform_apply" {
       content {
         name  = format("TF_VAR_%s", environment_variable.value["name"])
         value = environment_variable.value["value"]
+        type  = lookup(environment_variable.value, "type", "PLAINTEXT")
       }
     }
 

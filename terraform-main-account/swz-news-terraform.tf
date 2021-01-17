@@ -23,26 +23,17 @@ module "swz_news_terraform" {
     {
       name  = "github_owner"
       value = var.github_owner
+      type  = "PLAINTEXT"
     },
     {
       name  = "github_repo"
       value = github_repository.swz_news.name
+      type  = "PLAINTEXT"
     }
   ]
 
   tags = local.tags
 }
-
-//data "aws_iam_policy_document" "terraform_cross_account_pipeline_role" {
-//  statement {
-//    effect  = "Allow"
-//    actions = ["sts:AssumeRole"]
-//    principals {
-//      type        = "AWS"
-//      identifiers = [format("arn:aws:iam::%s:root", aws_organizations_account.swz_news_production_account.id)]
-//    }
-//  }
-//}
 
 data "aws_iam_policy_document" "terraform_cross_account_pipeline_policy" {
   // Permissions to change child account

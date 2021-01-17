@@ -18,6 +18,7 @@ variable "terraform_environment_variables" {
   type = list(object({
     name  = string
     value = string
+    type  = string
   }))
   description = "Environemnt variables to pass to Terraform. No need adding the prefix TF_VAR"
   default     = []

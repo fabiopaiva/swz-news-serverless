@@ -1,5 +1,6 @@
 locals {
   terraform_master_account_name = "master-account"
+  terraform_master_role         = "TerraformMasterRole"
 }
 
 module "master_terraform" {
@@ -22,13 +23,30 @@ module "master_terraform" {
   terraform_environment_variables = [
     {
       name  = "github_owner"
-      value = var.github_owner
+      value = aws_ssm_parameter.github_owner.value
+      type  = "PLAINTEXT"
     },
     {
       name  = "github_repo"
       value = github_repository.swz_news.name
-    }
+      type  = "PLAINTEXT"
+    },
+    {
+      name  = "github_token"
+      value = aws_ssm_parameter.github_token.name
+      type  = "PARAMETER_STORE"
+    },
+    {
+      name  = "aws_account_id"
+      value = aws_ssm_parameter.aws_account_id.value
+      type  = "PLAINTEXT"
+    },
   ]
 
   tags = local.tags
+}
+
+resource "aws_iam_role_policy_attachment" "terraform_master_pipeline_attachment" {
+  role = module.master_terraform.terraform_pipeline_role_id
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }

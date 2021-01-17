@@ -14,7 +14,9 @@ variable "aws_region" {
   default = "eu-central-1"
 }
 
-variable "aws_account_id" {}
+variable "aws_account_id" {
+  description = "AWS master account id"
+}
 
 variable "admin_email_pattern" {
   default = "fabio+%s@paiva.info"

@@ -14,5 +14,5 @@ It's common to store Terraform state in a backend service.
 If an existing backend service like Terraform Cloud or Consul is not available, it's common to create a backend service in a 
 cloud provider to store the state, and it's also common to use Terraform to create this service.
 
-For this reason, the TF configuration on this directory doesn't have a backend service configured. 
-The state is managed on the machine running the initial configuration. 
+For this reason, this Terraform configuration needs some environment variables in order to run for the first time. 
+These variables will be stored on AWS SSM and it will be able to deploy its own CodePipeline with those variables populated. 

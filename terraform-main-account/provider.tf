@@ -1,8 +1,5 @@
 provider "aws" {
   region = var.aws_region
-  assume_role {
-    role_arn = format("arn:aws:iam::%s:role/TerraformMaster", var.aws_account_id)
-  }
 }
 
 provider "github" {
