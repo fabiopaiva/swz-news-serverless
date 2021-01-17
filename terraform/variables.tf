@@ -29,12 +29,8 @@ variable "github_repo" {
   description = "Github repo"
 }
 
-variable "github_secret" {
-  description = "Github secret"
-}
-
 variable "repository_main_branch" {
-  default = "feature/frontend-app"
+  default = "master"
 }
 
 locals {

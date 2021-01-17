@@ -34,11 +34,6 @@ resource "aws_codebuild_project" "swz_news_terraform_plan" {
       name  = "TF_VAR_github_repo"
       value = github_repository.swz_news.name
     }
-
-    environment_variable {
-      name  = "TF_VAR_github_secret"
-      value = random_string.github_secret.result
-    }
   }
 
   logs_config {
@@ -80,6 +75,16 @@ resource "aws_codebuild_project" "swz_news_terraform_apply" {
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = false
     type                        = "LINUX_CONTAINER"
+
+    environment_variable {
+      name  = "TF_VAR_github_owner"
+      value = var.github_owner
+    }
+
+    environment_variable {
+      name  = "TF_VAR_github_repo"
+      value = github_repository.swz_news.name
+    }
   }
 
   logs_config {

@@ -58,19 +58,3 @@ resource "aws_codestarconnections_connection" "github_pipeline_connection" {
   name          = format("github-connection-%s", local.environment)
   provider_type = "GitHub"
 }
-
-resource "aws_codepipeline_webhook" "github_pipeline_webhook" {
-  authentication  = "GITHUB_HMAC"
-  name            = format("github-webhook-%s", local.environment)
-  target_action   = "Source"
-  target_pipeline = aws_codepipeline.frontend_pipeline.name
-
-  authentication_configuration {
-    secret_token = var.github_secret
-  }
-
-  filter {
-    json_path    = "$.ref"
-    match_equals = "refs/heads/{Branch}"
-  }
-}

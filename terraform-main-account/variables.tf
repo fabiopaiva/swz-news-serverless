@@ -10,10 +10,6 @@ variable "github_owner" {
   description = "Github owner"
 }
 
-variable "repository_main_branch" {
-  default = "master"
-}
-
 variable "aws_region" {
   default = "eu-central-1"
 }

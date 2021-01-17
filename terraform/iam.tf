@@ -53,9 +53,56 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
       "logs:PutLogEvents",
     ]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:DeleteObject",
+      "s3:GetObject*",
+      "s3:ListBucket",
+      "s3:PutObject*",
+    ]
+    resources = [
+      format("%s/*", aws_s3_bucket.pipeline_bucket.arn),
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetBucketVersioning",
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket",
+      "s3:ListObjects",
+    ]
+    resources = [
+      aws_s3_bucket.pipeline_bucket.arn,
+    ]
+  }
+
+  statement {
+    sid    = "AllowAccessToTheKMSKey"
+    effect = "Allow"
+
+    resources = [
+      aws_kms_key.swz_key.arn,
+    ]
+
+    actions = [
+      "kms:DescribeKey",
+      "kms:ListKeyPolicies",
+      "kms:GetKeyPolicy",
+      "kms:GetKeyRotationStatus",
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:GenerateDataKey*",
+      "kms:ReEncrypt*",
+    ]
+  }
 }
 
-resource "aws_iam_role_policy" "terraform_pipeline_policy" {
+resource "aws_iam_role_policy" "frontend_pipeline_policy" {
   name   = format("%s-policy", local.codepipeline_website_name)
   role   = aws_iam_role.frontend_pipeline_role.id
   policy = data.aws_iam_policy_document.frontend_pipeline_policy.json

@@ -86,19 +86,3 @@ resource "aws_codestarconnections_connection" "swz_news_pipeline_connection" {
   name          = format("%s-prd-connection", var.organization)
   provider_type = "GitHub"
 }
-
-resource "aws_codepipeline_webhook" "swz_news_pipeline_webhook" {
-  authentication  = "GITHUB_HMAC"
-  name            = format("%s-webhook", local.codepipeline_name)
-  target_action   = "Source"
-  target_pipeline = aws_codepipeline.terraform_swz_news_pipeline.name
-
-  authentication_configuration {
-    secret_token = random_string.github_secret.result
-  }
-
-  filter {
-    json_path    = "$.ref"
-    match_equals = "refs/heads/{Branch}"
-  }
-}
