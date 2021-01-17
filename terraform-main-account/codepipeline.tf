@@ -1,13 +1,13 @@
 locals {
-  codepipeline_name = format("%s-deployment-pipeline", local.production_project_name)
+  codepipeline_name = format("%s-pipeline", local.production_project_name)
 }
 
-resource "aws_codepipeline" "deployment_pipeline" {
+resource "aws_codepipeline" "swz_news_pipeline" {
   name     = local.codepipeline_name
-  role_arn = aws_iam_role.deployment_pipeline_role.arn
+  role_arn = aws_iam_role.swz_news_pipeline_role.arn
 
   artifact_store {
-    location = aws_s3_bucket.deployment_pipeline_bucket.bucket
+    location = aws_s3_bucket.pipeline_bucket.bucket
     type     = "S3"
 
     encryption_key {
@@ -22,29 +22,24 @@ resource "aws_codepipeline" "deployment_pipeline" {
     action {
       category = "Source"
       configuration = {
-        OAuthToken           = var.github_token
-        Branch               = var.repository_main_branch
-        Owner                = var.github_owner
-        PollForSourceChanges = "false"
-        Repo                 = github_repository.swz_news.name
+        ConnectionArn    = aws_codestarconnections_connection.swz_news_pipeline_connection.arn
+        FullRepositoryId = format("%s/%s", var.github_owner, github_repository.swz_news.name)
+        BranchName       = var.repository_main_branch
       }
-      input_artifacts = []
-      name            = "Source"
-      output_artifacts = [
-        "SourceArtifact",
-      ]
-      owner     = "ThirdParty"
-      provider  = "GitHub"
-      run_order = 1
-      version   = "1"
+      input_artifacts  = []
+      name             = "Source"
+      output_artifacts = ["SourceArtifact"]
+      owner            = "AWS"
+      provider         = "CodeStarSourceConnection"
+      version          = "1"
     }
   }
 
   stage {
-    name = "Build"
+    name = "TerraformPlan"
 
     action {
-      name             = "Build"
+      name             = "Plan"
       category         = "Build"
       owner            = "AWS"
       provider         = "CodeBuild"
@@ -53,17 +48,22 @@ resource "aws_codepipeline" "deployment_pipeline" {
       version          = "1"
 
       configuration = {
-        ProjectName = local.codepipeline_name
+        ProjectName = aws_codebuild_project.swz_news_terraform_plan.name
       }
     }
   }
 }
 
-resource "aws_codepipeline_webhook" "deployment_pipeline_webhook" {
+resource "aws_codestarconnections_connection" "swz_news_pipeline_connection" {
+  name          = format("%s-prd-connection", var.organization)
+  provider_type = "GitHub"
+}
+
+resource "aws_codepipeline_webhook" "swz_news_pipeline_webhook" {
   authentication  = "GITHUB_HMAC"
   name            = format("%s-webhook", local.codepipeline_name)
   target_action   = "Source"
-  target_pipeline = aws_codepipeline.deployment_pipeline.name
+  target_pipeline = aws_codepipeline.swz_news_pipeline.name
 
   authentication_configuration {
     secret_token = random_string.github_secret.result

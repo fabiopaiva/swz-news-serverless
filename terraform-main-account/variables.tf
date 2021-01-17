@@ -22,6 +22,6 @@ variable "admin_email_pattern" {
   default = "fabio+%s@paiva.info"
 }
 
-variable "aws_main_account_id" {
-  default = "986315062044"
+variable "pipeline_runner_aws_account_id" {
+  default = "461719735338"
 }

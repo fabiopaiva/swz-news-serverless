@@ -15,7 +15,7 @@ resource "github_repository_webhook" "swz_news_terraform_hook" {
   events     = ["push"]
 
   configuration {
-    url          = aws_codepipeline_webhook.deployment_pipeline_webhook.url
+    url          = aws_codepipeline_webhook.swz_news_pipeline_webhook.url
     insecure_ssl = false
     content_type = "json"
     secret       = random_string.github_secret.result
