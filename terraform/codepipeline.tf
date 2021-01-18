@@ -7,7 +7,7 @@ resource "aws_codepipeline" "frontend_pipeline" {
   role_arn = aws_iam_role.frontend_pipeline_role.arn
 
   artifact_store {
-    location = aws_s3_bucket.pipeline_bucket.bucket
+    location = aws_s3_bucket.pipeline_artifacts_bucket.bucket
     type     = "S3"
 
     encryption_key {
@@ -59,7 +59,7 @@ resource "aws_codepipeline" "frontend_pipeline" {
     action {
       category = "Deploy"
       configuration = {
-        "BucketName" = aws_s3_bucket.swz_news_website_buckets.bucket
+        "BucketName" = aws_s3_bucket.swz_news_website_bucket.bucket
         "Extract"    = "true"
       }
       input_artifacts = [

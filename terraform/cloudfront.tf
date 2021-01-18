@@ -1,5 +1,5 @@
 locals {
-  news_website_origin_id = format("%s-id", aws_s3_bucket.swz_news_website_buckets.bucket)
+  news_website_origin_id = format("%s-id", aws_s3_bucket.swz_news_website_bucket.bucket)
 }
 
 resource "aws_cloudfront_distribution" "news_website" {
@@ -9,7 +9,7 @@ resource "aws_cloudfront_distribution" "news_website" {
   aliases = [ local.news_domain ]
 
   origin {
-    domain_name = aws_s3_bucket.swz_news_website_buckets.bucket_regional_domain_name
+    domain_name = aws_s3_bucket.swz_news_website_bucket.bucket_regional_domain_name
     origin_id   = local.news_website_origin_id
 
     s3_origin_config {
@@ -73,7 +73,7 @@ data "aws_iam_policy_document" "news_website_bucket_policy" {
       identifiers = [aws_cloudfront_origin_access_identity.origin_access_identity.iam_arn]
     }
     actions   = ["S3:List*"]
-    resources = [aws_s3_bucket.swz_news_website_buckets.arn]
+    resources = [aws_s3_bucket.swz_news_website_bucket.arn]
   }
   statement {
     sid    = "Cloudfront Origin Access read content"
@@ -85,12 +85,12 @@ data "aws_iam_policy_document" "news_website_bucket_policy" {
     actions = [
       "S3:GetObject"
     ]
-    resources = [format("%s/*", aws_s3_bucket.swz_news_website_buckets.arn)]
+    resources = [format("%s/*", aws_s3_bucket.swz_news_website_bucket.arn)]
   }
 }
 
 resource "aws_s3_bucket_policy" "news_website_bucket_policy" {
-  bucket = aws_s3_bucket.swz_news_website_buckets.bucket
+  bucket = aws_s3_bucket.swz_news_website_bucket.bucket
   policy = data.aws_iam_policy_document.news_website_bucket_policy.json
 }
 

@@ -63,7 +63,7 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
       "s3:PutObject*",
     ]
     resources = [
-      format("%s/*", aws_s3_bucket.pipeline_bucket.arn),
+      format("%s/*", aws_s3_bucket.pipeline_artifacts_bucket.arn),
     ]
   }
 
@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
       "s3:ListObjects",
     ]
     resources = [
-      aws_s3_bucket.pipeline_bucket.arn,
+      aws_s3_bucket.pipeline_artifacts_bucket.arn,
     ]
   }
 
@@ -107,7 +107,7 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
       "s3:PutObject*",
     ]
     resources = [
-      format("%s/*", aws_s3_bucket.swz_news_website_buckets.arn),
+      format("%s/*", aws_s3_bucket.swz_news_website_bucket.arn),
     ]
   }
 }
