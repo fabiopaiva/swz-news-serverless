@@ -10,7 +10,3 @@ resource "aws_acm_certificate" "cloudfront_cert" {
     create_before_destroy = true
   }
 }
-
-output "acm_ssl_validation" {
-  value = aws_acm_certificate.cloudfront_cert.domain_validation_options
-}
