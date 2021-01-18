@@ -1,10 +1,12 @@
 # org: serverlessinc
-app: aws-node-rest-api
-service: aws-node-rest-api
+# app: aws-node-rest-api
+service: swz-news-backend
 
 provider:
   name: aws
   runtime: nodejs12.x
+  region: eu-central-1
+  stage: prd
 
 functions:
   hello:

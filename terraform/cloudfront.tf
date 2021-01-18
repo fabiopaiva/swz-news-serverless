@@ -6,7 +6,7 @@ resource "aws_cloudfront_distribution" "news_website" {
   enabled             = true
   default_root_object = "index.html"
 
-  aliases = [ local.news_domain ]
+  aliases = [local.news_domain]
 
   origin {
     domain_name = aws_s3_bucket.swz_news_website_bucket.bucket_regional_domain_name
@@ -54,7 +54,7 @@ resource "aws_cloudfront_distribution" "news_website" {
 
   viewer_certificate {
     acm_certificate_arn = aws_acm_certificate.cloudfront_cert.arn
-    ssl_support_method = "sni-only"
+    ssl_support_method  = "sni-only"
   }
 
   tags = local.tags

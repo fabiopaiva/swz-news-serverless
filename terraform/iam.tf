@@ -34,8 +34,8 @@ data "aws_iam_policy_document" "application_pipeline_policy" {
   }
 
   statement {
-    sid    = "AllowLogging"
-    effect = "Allow"
+    sid       = "AllowLogging"
+    effect    = "Allow"
     resources = ["*"]
     actions = [
       "logs:CreateLogGroup",
@@ -101,13 +101,47 @@ data "aws_iam_policy_document" "application_pipeline_policy" {
 
 // application pipelines
 resource "aws_iam_role" "application_pipeline_role" {
-  name = format("%s-application-pipeline-role", local.codepipeline_application_name)
+  name               = format("%s-application-pipeline-role", local.codepipeline_application_name)
   assume_role_policy = data.aws_iam_policy_document.application_pipeline_role.json
-  tags = local.tags
+  tags               = local.tags
 }
 
 resource "aws_iam_role_policy" "application_pipeline_policy" {
-  name   = format("frontend-%s-general-policy", local.codepipeline_application_name)
+  name   = format("%s-policy", local.codepipeline_application_name)
   role   = aws_iam_role.application_pipeline_role.id
   policy = data.aws_iam_policy_document.application_pipeline_policy.json
+}
+
+
+resource "aws_iam_role" "backend_codebuild_role" {
+  name               = format("%s-backend-codebuild-role", local.codepipeline_application_name)
+  assume_role_policy = data.aws_iam_policy_document.application_pipeline_role.json
+  tags               = local.tags
+}
+
+resource "aws_iam_role_policy" "backend_codebuild_general_policy" {
+  name   = format("backend-%s-general-policy", local.codepipeline_application_name)
+  role   = aws_iam_role.application_pipeline_role.id
+  policy = data.aws_iam_policy_document.application_pipeline_policy.json
+}
+
+data "aws_iam_policy_document" "backend_serverless_policy" {
+  statement {
+    effect  = "Allow"
+    actions = ["cloudformation:*"]
+    resources = [
+      format(
+        "arn:aws:cloudformation:%s:%s:stack/swz-news-backend-%s/*",
+        data.aws_region.current.name,
+        data.aws_caller_identity.current.account_id,
+        local.environment
+      )
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "backend_codebuild_serverless_policy" {
+  name   = format("backend-%s-serverless-policy", local.codepipeline_application_name)
+  role   = aws_iam_role.application_pipeline_role.id
+  policy = data.aws_iam_policy_document.backend_serverless_policy.json
 }

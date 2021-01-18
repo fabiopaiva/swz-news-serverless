@@ -45,7 +45,7 @@ resource "aws_codebuild_project" "backend_build" {
   build_timeout  = 60
   name           = format("backend-build-%s", local.environment)
   queued_timeout = 480
-  service_role   = aws_iam_role.application_pipeline_role.arn
+  service_role   = aws_iam_role.backend_codebuild_role.arn
 
   artifacts {
     type = "CODEPIPELINE"
