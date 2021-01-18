@@ -1,10 +1,10 @@
 locals {
-  codepipeline_website_name = format("frontend-pipeline-%s", local.environment)
+  codepipeline_application_name = format("application-pipeline-%s", local.environment)
 }
 
-resource "aws_codepipeline" "frontend_pipeline" {
-  name     = format("frontend-%s", local.codepipeline_website_name)
-  role_arn = aws_iam_role.frontend_pipeline_role.arn
+resource "aws_codepipeline" "application_pipeline" {
+  name     = format("application-%s", local.codepipeline_application_name)
+  role_arn = aws_iam_role.application_pipeline_role.arn
 
   artifact_store {
     location = aws_s3_bucket.pipeline_artifacts_bucket.bucket
@@ -39,16 +39,30 @@ resource "aws_codepipeline" "frontend_pipeline" {
     name = "Build"
 
     action {
-      name             = "Build"
+      name             = "BuildFrontend"
       category         = "Build"
       owner            = "AWS"
       provider         = "CodeBuild"
       input_artifacts  = ["SourceArtifact"]
-      output_artifacts = ["BuildArtifact"]
+      output_artifacts = ["BuildArtifactFrontend"]
       version          = "1"
 
       configuration = {
         ProjectName = aws_codebuild_project.frontend_build.name
+      }
+    }
+
+    action {
+      name             = "BuildBackend"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["SourceArtifact"]
+      output_artifacts = ["BuildArtifactBackend"]
+      version          = "1"
+
+      configuration = {
+        ProjectName = aws_codebuild_project.backend_build.name
       }
     }
   }
@@ -63,7 +77,7 @@ resource "aws_codepipeline" "frontend_pipeline" {
         "Extract"    = "true"
       }
       input_artifacts = [
-        "BuildArtifact",
+        "BuildArtifactFrontend",
       ]
       name             = "Deploy"
       output_artifacts = []

@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "frontend_pipeline_role" {
+data "aws_iam_policy_document" "application_pipeline_role" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
@@ -12,16 +12,7 @@ data "aws_iam_policy_document" "frontend_pipeline_role" {
   }
 }
 
-resource "aws_iam_role" "frontend_pipeline_role" {
-  name = format("%s-frontend-role", local.codepipeline_website_name)
-
-  assume_role_policy = data.aws_iam_policy_document.frontend_pipeline_role.json
-
-  tags = local.tags
-}
-
-
-data "aws_iam_policy_document" "frontend_pipeline_policy" {
+data "aws_iam_policy_document" "application_pipeline_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -30,6 +21,7 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
     ]
     resources = [
       aws_codebuild_project.frontend_build.arn,
+      aws_codebuild_project.backend_build.arn,
     ]
   }
 
@@ -44,9 +36,7 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
   statement {
     sid    = "AllowLogging"
     effect = "Allow"
-
     resources = ["*"]
-
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
@@ -84,11 +74,9 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
   statement {
     sid    = "AllowAccessToTheKMSKey"
     effect = "Allow"
-
     resources = [
       aws_kms_key.swz_key.arn,
     ]
-
     actions = [
       "kms:DescribeKey",
       "kms:ListKeyPolicies",
@@ -100,7 +88,6 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
       "kms:ReEncrypt*",
     ]
   }
-
   statement {
     effect = "Allow"
     actions = [
@@ -112,8 +99,15 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
   }
 }
 
-resource "aws_iam_role_policy" "frontend_pipeline_policy" {
-  name   = format("%s-policy", local.codepipeline_website_name)
-  role   = aws_iam_role.frontend_pipeline_role.id
-  policy = data.aws_iam_policy_document.frontend_pipeline_policy.json
+// application pipelines
+resource "aws_iam_role" "application_pipeline_role" {
+  name = format("%s-application-pipeline-role", local.codepipeline_application_name)
+  assume_role_policy = data.aws_iam_policy_document.application_pipeline_role.json
+  tags = local.tags
+}
+
+resource "aws_iam_role_policy" "application_pipeline_policy" {
+  name   = format("frontend-%s-general-policy", local.codepipeline_application_name)
+  role   = aws_iam_role.application_pipeline_role.id
+  policy = data.aws_iam_policy_document.application_pipeline_policy.json
 }
