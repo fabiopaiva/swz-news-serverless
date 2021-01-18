@@ -3,7 +3,10 @@ locals {
 }
 
 resource "aws_cloudfront_distribution" "news_website" {
-  enabled = true
+  enabled             = true
+  default_root_object = "index.html"
+
+  aliases = [ local.news_domain ]
 
   origin {
     domain_name = aws_s3_bucket.swz_news_website_buckets.bucket_regional_domain_name
@@ -15,9 +18,9 @@ resource "aws_cloudfront_distribution" "news_website" {
   }
 
   custom_error_response {
-    error_code = 404
-    response_code = 200
-    response_page_path = "/index.html"
+    error_code            = 404
+    response_code         = 200
+    response_page_path    = "/index.html"
     error_caching_min_ttl = 3600
   }
 
@@ -48,7 +51,8 @@ resource "aws_cloudfront_distribution" "news_website" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn = aws_acm_certificate.cloudfront_cert.arn
+    ssl_support_method = "sni-only"
   }
 
   tags = local.tags
