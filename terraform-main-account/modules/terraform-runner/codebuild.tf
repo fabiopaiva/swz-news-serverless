@@ -57,7 +57,7 @@ resource "aws_codebuild_project" "terraform_plan" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "terraform-modules/terraform-runner/tf-plan-buildspec.yml"
+    buildspec = "terraform-main-account/modules/terraform-runner/tf-plan-buildspec.yml"
   }
 
   tags = var.tags
@@ -117,7 +117,7 @@ resource "aws_codebuild_project" "terraform_apply" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "terraform-modules/terraform-runner/tf-apply-buildspec.yml"
+    buildspec = "terraform-main-account/modules/terraform-runner/tf-apply-buildspec.yml"
   }
 
   tags = var.tags

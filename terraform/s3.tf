@@ -1,18 +1,18 @@
 resource "aws_s3_bucket" "upload_bucket" {
-  bucket = format("%s-uploads", terraform.workspace)
+  bucket = format("uploads-%s", terraform.workspace)
 
   tags = local.tags
 }
 
 resource "aws_s3_bucket" "log_bucket" {
-  bucket = format("%s-logs", terraform.workspace)
+  bucket = format("logs-%s", terraform.workspace)
   acl    = "log-delivery-write"
   tags   = local.tags
 }
 
 
 resource "aws_s3_bucket" "swz_news_website_buckets" {
-  bucket = format("%s-static-website", terraform.workspace)
+  bucket = format("static-website-%s", terraform.workspace)
 
   website {
     index_document = "index.html"
@@ -27,7 +27,7 @@ resource "aws_s3_bucket" "swz_news_website_buckets" {
 }
 
 resource "aws_s3_bucket" "pipeline_bucket" {
-  bucket = format("pipeline-artifacts-%s", terraform.workspace)
+  bucket = format("codepipeline-artifacts-%s", terraform.workspace)
   acl    = "private"
 
   tags = local.tags

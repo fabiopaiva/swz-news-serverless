@@ -8,4 +8,5 @@ phases:
       - npx yarn build
 artifacts:
   files:
-    - 'build/**/*'
+    - '**/*'
+  base-directory: frontend/build

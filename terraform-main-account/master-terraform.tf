@@ -4,7 +4,7 @@ locals {
 }
 
 module "master_terraform" {
-  source = "../terraform-modules/terraform-runner"
+  source = "modules/terraform-runner"
 
   terraform_directory                = "./terraform-main-account"
   terraform_project_workspace        = local.terraform_master_account_name
