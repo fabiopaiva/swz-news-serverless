@@ -121,7 +121,7 @@ resource "aws_iam_role" "backend_codebuild_role" {
 
 resource "aws_iam_role_policy" "backend_codebuild_general_policy" {
   name   = format("backend-%s-general-policy", local.codepipeline_application_name)
-  role   = aws_iam_role.application_pipeline_role.id
+  role   = aws_iam_role.backend_codebuild_role.id
   policy = data.aws_iam_policy_document.application_pipeline_policy.json
 }
 
@@ -138,10 +138,16 @@ data "aws_iam_policy_document" "backend_serverless_policy" {
       )
     ]
   }
+
+  statement {
+    effect = "Allow"
+    actions = ["s3:CreateBucket"]
+    resources = ["arn:aws:s3:::com.serverless.deploys"]
+  }
 }
 
 resource "aws_iam_role_policy" "backend_codebuild_serverless_policy" {
   name   = format("backend-%s-serverless-policy", local.codepipeline_application_name)
-  role   = aws_iam_role.application_pipeline_role.id
+  role   = aws_iam_role.backend_codebuild_role.id
   policy = data.aws_iam_policy_document.backend_serverless_policy.json
 }

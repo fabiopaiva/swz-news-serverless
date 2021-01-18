@@ -7,6 +7,12 @@ provider:
   runtime: nodejs12.x
   region: eu-central-1
   stage: prd
+  apiGateway:
+    shouldStartNameWithService: true
+  lambdaHashingVersion: 20201221
+  deploymentBucket:
+    blockPublicAccess: true
+    name: com.serverless.deploys
 
 functions:
   hello:
