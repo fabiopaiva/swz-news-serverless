@@ -58,7 +58,7 @@ resource "aws_codebuild_project" "backend_build" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "node:14-alpine"
+    image                       = "nikolaik/python-nodejs:python3.6-nodejs14-alpine"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = false
     type                        = "LINUX_CONTAINER"

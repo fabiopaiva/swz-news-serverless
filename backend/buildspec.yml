@@ -2,6 +2,7 @@ version: 0.2
 phases:
   install:
     commands:
+      - cd backend
       - npm i -g serverless
 #  pre_build:
 #    commands:
