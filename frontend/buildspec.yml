@@ -1,12 +1,19 @@
 version: 0.2
 
 phases:
-  build:
+  pre_build:
     commands:
       - cd frontend
       - npx yarn
+      - yarn test:ci
+  build:
+    commands:
       - npx yarn build
 artifacts:
   files:
     - '**/*'
   base-directory: frontend/build
+
+cache:
+  paths:
+    - /root/.npm/**/*

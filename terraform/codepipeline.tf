@@ -52,6 +52,27 @@ resource "aws_codepipeline" "frontend_pipeline" {
       }
     }
   }
+
+  stage {
+    name = "Deploy"
+
+    action {
+      category = "Deploy"
+      configuration = {
+        "BucketName" = aws_s3_bucket.swz_news_website_buckets.bucket
+        "Extract"    = "true"
+      }
+      input_artifacts = [
+        "BuildArtifact",
+      ]
+      name             = "Deploy"
+      output_artifacts = []
+      owner            = "AWS"
+      provider         = "S3"
+      run_order        = 1
+      version          = "1"
+    }
+  }
 }
 
 resource "aws_codestarconnections_connection" "github_pipeline_connection" {

@@ -100,6 +100,16 @@ data "aws_iam_policy_document" "frontend_pipeline_policy" {
       "kms:ReEncrypt*",
     ]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:PutObject*",
+    ]
+    resources = [
+      format("%s/*", aws_s3_bucket.swz_news_website_buckets.arn),
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "frontend_pipeline_policy" {

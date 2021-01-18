@@ -3,7 +3,7 @@ locals {
 }
 
 module "swz_news_terraform" {
-  source = "modules/terraform-runner"
+  source = "./modules/terraform-runner"
 
   terraform_directory                = "./terraform"
   terraform_project_workspace        = local.terraform_swz_news_prd_name
