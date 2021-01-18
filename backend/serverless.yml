@@ -10,8 +10,6 @@ provider:
   apiGateway:
     shouldStartNameWithService: true
   lambdaHashingVersion: 20201221
-  deploymentBucket:
-    name: ${DEPLOYMENT_BUCKET}
 
 functions:
   hello:

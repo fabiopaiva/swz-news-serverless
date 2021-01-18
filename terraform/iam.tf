@@ -126,23 +126,24 @@ resource "aws_iam_role_policy" "backend_codebuild_general_policy" {
 }
 
 data "aws_iam_policy_document" "backend_serverless_policy" {
-  statement {
-    effect  = "Allow"
-    actions = ["cloudformation:*"]
-    resources = [
-      format(
-        "arn:aws:cloudformation:%s:%s:stack/swz-news-backend-%s/*",
-        data.aws_region.current.name,
-        data.aws_caller_identity.current.account_id,
-        local.environment
-      )
-    ]
-  }
+  // TODO: Create specific rules for Serverless
+//  statement {
+//    effect  = "Allow"
+//    actions = ["cloudformation:*"]
+//    resources = [
+//      format(
+//        "arn:aws:cloudformation:%s:%s:stack/swz-news-backend-%s/*",
+//        data.aws_region.current.name,
+//        data.aws_caller_identity.current.account_id,
+//        local.environment
+//      )
+//    ]
+//  }
 
   statement {
     effect = "Allow"
-    actions = ["s3:CreateBucket"]
-    resources = ["arn:aws:s3:::com.serverless.deploys"]
+    actions = ["*"]
+    resources = ["*"]
   }
 }
 
