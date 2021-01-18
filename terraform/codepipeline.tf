@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_codepipeline" "application_pipeline" {
-  name     = format("application-%s", local.codepipeline_application_name)
+  name     = local.codepipeline_application_name
   role_arn = aws_iam_role.application_pipeline_role.arn
 
   artifact_store {

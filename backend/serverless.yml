@@ -11,8 +11,7 @@ provider:
     shouldStartNameWithService: true
   lambdaHashingVersion: 20201221
   deploymentBucket:
-    blockPublicAccess: true
-    name: com.serverless.deploys
+    name: ${DEPLOYMENT_BUCKET}
 
 functions:
   hello:

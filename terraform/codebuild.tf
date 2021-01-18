@@ -62,6 +62,10 @@ resource "aws_codebuild_project" "backend_build" {
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = false
     type                        = "LINUX_CONTAINER"
+    environment_variable {
+      name = "DEPLOYMENT_BUCKET"
+      value = aws_s3_bucket.pipeline_artifacts_bucket.bucket
+    }
   }
 
   logs_config {
