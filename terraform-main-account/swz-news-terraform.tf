@@ -35,18 +35,7 @@ module "swz_news_terraform" {
   tags = local.tags
 }
 
-data "aws_iam_policy_document" "terraform_cross_account_pipeline_policy" {
-  // Permissions to change child account
-  statement {
-    effect    = "Allow"
-    actions   = ["sts:AssumeRole"]
-    resources = [format("arn:aws:iam::%s:role/OrganizationAccountAccessRole", aws_organizations_account.swz_news_production_account.id)]
-  }
-}
-
-resource "aws_iam_role_policy" "terraform_pipeline_policy" {
-  name = format("terraform-cross-account-policy-%s", local.terraform_swz_news_prd_name)
+resource "aws_iam_role_policy_attachment" "terraform_swz_news_pipeline_attachment" {
   role = module.swz_news_terraform.terraform_pipeline_role_id
-
-  policy = data.aws_iam_policy_document.terraform_cross_account_pipeline_policy.json
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
