@@ -1,0 +1,14 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - npm i -g serverless
+#  pre_build:
+#    commands:
+#      - npm run test
+  build:
+    commands:
+      - serverless deploy
+cache:
+  paths:
+    - /root/.npm/**/*
