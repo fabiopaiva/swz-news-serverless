@@ -1,25 +1,33 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {BrowserRouter, Switch, Route, Link} from "react-router-dom";
+import {Container, Navbar, NavbarBrand} from "reactstrap";
+
+import { Home } from "./pages/Home";
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {News} from "./pages/News";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <React.Fragment>
+        <Navbar color="dark" dark>
+          <Container>
+          <NavbarBrand tag={Link} to="/">SWZ News</NavbarBrand>
+          </Container>
+        </Navbar>
+        <Container className="mt-5">
+          <Switch>
+            <Route path="/news/:slug">
+              <News />
+            </Route>
+            <Route path="/">
+              <Home />
+            </Route>
+          </Switch>
+        </Container>
+      </React.Fragment>
+    </BrowserRouter>
   );
 }
 
