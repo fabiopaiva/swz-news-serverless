@@ -9,27 +9,12 @@ provider:
   stage: prd # TODO: pass via environment variable
   apiGateway:
     shouldStartNameWithService: true
+    metrics: true
   lambdaHashingVersion: 20201221
   logRetentionInDays: 14
   memorySize: 512
   timeout: 10
-  cloudFront:
-    cachePolicy:
-      DefaultTTL: 60
-      MinTTL: 30
-      MaxTTL: 3600
-      ParametersInCacheKeyAndForwardedToOrigin:
-        CookiesConfig:
-          CookieBehavior: none
-        EnableAcceptEncodingBrotli: true # optional
-        EnableAcceptEncodingGzip: true
-        HeadersConfig:
-          HeadersBehavior: whitelist # Possible values are 'none' and 'whitelist'
-          Headers:
-            - authorization
-            - content-type
-        QueryStringsConfig:
-          QueryStringBehavior: whitelist
+
 functions:
   getNews:
     role: ${self:custom.lambdaNewsIam}
@@ -38,6 +23,23 @@ functions:
       - http:
           path: /news
           method: get
+          caching:
+            enabled: true
+    environment:
+      NEWS_TABLE_NAME: ${self:custom.dynamodbNewsTableName}
+  getNewsItem:
+    role: ${self:custom.lambdaNewsIam}
+    handler: handler.getNewsItem
+    events:
+      - http:
+          path: /news/{slug}
+          method: get
+          caching:
+            enabled: true
+            cacheKeyParameters:
+              - name: request.path.slug
+    environment:
+      NEWS_TABLE_NAME: ${self:custom.dynamodbNewsTableName}
   postNews:
     role: ${self:custom.lambdaNewsIam}
     handler: handler.postNews
@@ -47,6 +49,8 @@ functions:
       - http:
           path: /news
           method: post
+  #          authorizerFunc:
+  #            handler: handler.authorizerFunc
   postNewsConsumer:
     role: ${self:custom.lambdaNewsIam}
     handler: handler.postNewsConsumer
@@ -57,6 +61,7 @@ functions:
       - sqs: ${self:custom.sqsNewsQueueARN}
 
 plugins:
+  - serverless-api-gateway-caching
   - serverless-domain-manager
 
 custom:
@@ -68,6 +73,10 @@ custom:
   dynamodbNewsTableName: SwzNewsTable
   customDomain:
     domainName: api.swz.paiva.info
-    basePath: ''
+    basePath: ""
     stage: ${self:provider.stage}
     createRoute53Record: true
+  apiGatewayCaching:
+    enabled: true
+    ttlInSeconds: 300 # defaults to the maximum allowed: 3600
+    dataEncrypted: true

@@ -6,16 +6,10 @@ resource "aws_dynamodb_table" "swz_news_table" {
   billing_mode   = "PROVISIONED"
   read_capacity  = 5
   write_capacity = 5
-  hash_key       = "slug"
-  range_key      = "date"
+  hash_key       = "id"
 
   attribute {
-    name = "slug"
-    type = "S"
-  }
-
-  attribute {
-    name = "date"
+    name = "id"
     type = "S"
   }
 

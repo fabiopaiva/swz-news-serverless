@@ -190,6 +190,7 @@ data "aws_iam_policy_document" "serverless_function_news_policy" {
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:DeleteItem",
+      "dynamodb:Scan",
     ]
     resources = [aws_dynamodb_table.swz_news_table.arn]
   }
