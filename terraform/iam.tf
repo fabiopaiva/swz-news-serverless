@@ -1,6 +1,6 @@
 data "aws_iam_policy_document" "kms_key_access" {
   statement {
-    sid = "AllowAccessToTheKMSKey"
+    sid    = "AllowAccessToTheKMSKey"
     effect = "Allow"
     resources = [
       aws_kms_key.swz_key.arn,
@@ -246,7 +246,7 @@ resource "aws_iam_role_policy" "serverless_function_news_policy" {
 }
 
 resource "aws_iam_role_policy" "serverless_function_news_kms_policy" {
-  name = format("serverless-function-news-kms-policy-%s", local.environment)
+  name   = format("serverless-function-news-kms-policy-%s", local.environment)
   role   = aws_iam_role.serverless_function_news_role.id
   policy = data.aws_iam_policy_document.kms_key_access.json
 }
