@@ -1,3 +1,4 @@
+const { corsHeadersInjected } = require('../utils/cors');
 const dynamo = require("../services/dynamo");
 
 module.exports = async (_event) => {
@@ -9,6 +10,7 @@ module.exports = async (_event) => {
         result: "success",
         data,
       }),
+      ...corsHeadersInjected
     };
   } catch (e) {
     console.error(e);
@@ -17,6 +19,7 @@ module.exports = async (_event) => {
       body: JSON.stringify({
         errors: [e.message],
       }),
+      ...corsHeadersInjected
     };
   }
 };

@@ -23,6 +23,7 @@ functions:
       - http:
           path: /news
           method: get
+          cors: true
           caching:
             enabled: true
     environment:
@@ -34,6 +35,7 @@ functions:
       - http:
           path: /news/{slug}
           method: get
+          cors: true
           caching:
             enabled: true
             cacheKeyParameters:
@@ -48,6 +50,7 @@ functions:
     events:
       - http:
           path: /news
+          cors: true
           method: post
   #          authorizerFunc:
   #            handler: handler.authorizerFunc

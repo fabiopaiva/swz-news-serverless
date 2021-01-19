@@ -1,3 +1,4 @@
+const { corsHeadersInjected } = require('../utils/cors');
 const sqs = require("../services/sqs");
 
 module.exports = async (event) => {
@@ -8,6 +9,7 @@ module.exports = async (event) => {
       body: JSON.stringify({
         errors: ["Message is too big"],
       }),
+      ...corsHeadersInjected
     };
   }
   const { slug, title, date, description } = JSON.parse(event.body);
@@ -17,6 +19,7 @@ module.exports = async (event) => {
       body: JSON.stringify({
         errors: ["slug and date are required"],
       }),
+      ...corsHeadersInjected
     };
   }
 
@@ -38,6 +41,7 @@ module.exports = async (event) => {
         message: "success",
         id: MessageId,
       }),
+      ...corsHeadersInjected
     };
   } catch (e) {
     console.error(e);
@@ -46,6 +50,7 @@ module.exports = async (event) => {
       body: JSON.stringify({
         errors: [e.message],
       }),
+      ...corsHeadersInjected
     };
   }
 };
