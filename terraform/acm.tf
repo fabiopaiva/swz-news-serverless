@@ -10,3 +10,15 @@ resource "aws_acm_certificate" "cloudfront_cert" {
     create_before_destroy = true
   }
 }
+
+resource "aws_acm_certificate" "regional_cert" {
+  domain_name       = var.domain_name
+  validation_method = "DNS"
+
+  subject_alternative_names = [format("*.%s", var.domain_name)]
+  tags                      = local.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}

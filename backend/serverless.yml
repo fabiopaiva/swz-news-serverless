@@ -6,15 +6,68 @@ provider:
   name: aws
   runtime: nodejs12.x
   region: eu-central-1
-  stage: prd
+  stage: prd # TODO: pass via environment variable
   apiGateway:
     shouldStartNameWithService: true
   lambdaHashingVersion: 20201221
-
+  logRetentionInDays: 14
+  memorySize: 512
+  timeout: 10
+  cloudFront:
+    cachePolicy:
+      DefaultTTL: 60
+      MinTTL: 30
+      MaxTTL: 3600
+      ParametersInCacheKeyAndForwardedToOrigin:
+        CookiesConfig:
+          CookieBehavior: none
+        EnableAcceptEncodingBrotli: true # optional
+        EnableAcceptEncodingGzip: true
+        HeadersConfig:
+          HeadersBehavior: whitelist # Possible values are 'none' and 'whitelist'
+          Headers:
+            - authorization
+            - content-type
+        QueryStringsConfig:
+          QueryStringBehavior: whitelist
 functions:
-  hello:
-    handler: handler.hello
+  getNews:
+    role: ${self:custom.lambdaNewsIam}
+    handler: handler.getNews
     events:
       - http:
-          path: /
+          path: /news
           method: get
+  postNews:
+    role: ${self:custom.lambdaNewsIam}
+    handler: handler.postNews
+    environment:
+      SQS_QUEUE_URL: ${self:custom.sqsNewsQueueName}
+    events:
+      - http:
+          path: /news
+          method: post
+  postNewsConsumer:
+    role: ${self:custom.lambdaNewsIam}
+    handler: handler.postNewsConsumer
+    environment:
+      SQS_QUEUE_URL: ${self:custom.sqsNewsQueueName}
+      NEWS_TABLE_NAME: ${self:custom.dynamodbNewsTableName}
+    events:
+      - sqs: ${self:custom.sqsNewsQueueARN}
+
+plugins:
+  - serverless-domain-manager
+
+custom:
+  # TODO: pass via environment variable
+  accountId: 461719735338
+  lambdaNewsIam: arn:aws:iam::${self:custom.accountId}:role/serverless-function-news-role-prd
+  sqsNewsQueueName: https://sqs.${self:provider.region}.amazonaws.com/${self:custom.accountId}/post-news-queue-prd
+  sqsNewsQueueARN: arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:post-news-queue-prd
+  dynamodbNewsTableName: SwzNewsTable
+  customDomain:
+    domainName: api.swz.paiva.info
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: true

@@ -2,6 +2,10 @@ locals {
   news_website_origin_id = format("%s-id", aws_s3_bucket.swz_news_website_bucket.bucket)
 }
 
+resource "random_password" "cloudfront_api_password_header" {
+  length = 50
+}
+
 resource "aws_cloudfront_distribution" "news_website" {
   enabled             = true
   default_root_object = "index.html"
@@ -17,12 +21,12 @@ resource "aws_cloudfront_distribution" "news_website" {
     }
   }
 
-  custom_error_response {
-    error_code            = 404
-    response_code         = 200
-    response_page_path    = "/index.html"
-    error_caching_min_ttl = 3600
-  }
+  //  custom_error_response {
+  //    error_code            = 404
+  //    response_code         = 200
+  //    response_page_path    = "/index.html"
+  //    error_caching_min_ttl = 0
+  //  }
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
