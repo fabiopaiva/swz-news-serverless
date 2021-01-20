@@ -1,10 +1,10 @@
 # SWZ News
 
-## Projects
+## Projects description
 
 4 projects share this repository:
 
-### [Terraform AWS master account](terraform-main-account/README.md) 
+### 1) [Terraform AWS master account](terraform-main-account/README.md) 
 
 The master account is responsible for the initial setup on AWS for the following components:
 
@@ -17,9 +17,11 @@ The master account is responsible for the initial setup on AWS for the following
     * Confirm (Manual approval)
     * Terraform apply
 
-### [Terraform SWZ News AWS account](terraform/README.md)
+### 2) [Terraform SWZ News AWS account](terraform/README.md)
 
-### [Backend](backend/README.md)
+Terraform project used to manage SWZ News project infrastructure.
+
+### 3) [Backend](backend/README.md)
 
 The backend project is a [Serverless](http://serverless.com/) application responsible for the following endpoints:
 
@@ -27,14 +29,16 @@ The backend project is a [Serverless](http://serverless.com/) application respon
 * GET /news/:slug
 * POST /news
 
-### [Frontend](terraform/README.md)
+### 4) [Frontend](terraform/README.md)
 
 The frontend is a regular [CRA](https://reactjs.org/docs/create-a-new-react-app.html) responsible for:
 
 * displaying a list with news
 * displaying a news item
 
-## Cloud Components used for this application
+## Cloud Components used on this application
+
+The following components have been used to build and run this application
 
 ### ACM (SSL)
 

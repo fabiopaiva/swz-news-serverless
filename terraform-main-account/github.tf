@@ -2,7 +2,7 @@ resource "github_repository" "swz_news" {
   name        = "swz-news-serverless"
   description = "My awesome serverless news website running on AWS"
 
-  visibility = "private"
+  visibility = "public"
 }
 
 output "github_html_url" {
