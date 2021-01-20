@@ -14,6 +14,8 @@ provider:
   logRetentionInDays: 14
   memorySize: 512
   timeout: 10
+  logs:
+    restApi: true
 
 functions:
   getNews:
@@ -48,13 +50,14 @@ functions:
     environment:
       SQS_QUEUE_URL: ${self:custom.sqsNewsQueueName}
     events:
-      - cognitoUserPool:
-        pool: ${self:custom.cognitoPool}
-        trigger: PreSignUp
       - http:
           path: /news
           cors: true
           method: post
+          authorizer:
+            arn: ${self:custom.cognitoUserPoolArn}
+            scopes:
+              - news/write
   postNewsConsumer:
     role: ${self:custom.lambdaNewsIam}
     handler: handler.postNewsConsumer
@@ -75,7 +78,9 @@ custom:
   sqsNewsQueueName: https://sqs.${self:provider.region}.amazonaws.com/${self:custom.accountId}/post-news-queue-prd
   sqsNewsQueueARN: arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:post-news-queue-prd
   dynamodbNewsTableName: SwzNewsTable
-  cognitoPool: swz-auth-cognito-prd
+  cognitoUserPoolArn: arn:aws:cognito-idp:${self:provider.region}:${self:custom.accountId}:userpool/eu-central-1_NzjxpoVzh
+  cognitoUserPoolClientId: 1ing85m8a46t6c20djqodh7u4e
+  cognitoUserPoolDomain: auth.swz.paiva.info
   customDomain:
     domainName: api.swz.paiva.info
     basePath: ""

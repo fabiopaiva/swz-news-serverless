@@ -4,19 +4,6 @@ resource "aws_cognito_user_pool" "swz_auth_pool" {
   tags = local.tags
 }
 
-resource "aws_cognito_identity_pool" "main" {
-  identity_pool_name               = format("swz-auth-identity-pool-%s", local.environment)
-  allow_unauthenticated_identities = false
-
-  cognito_identity_providers {
-    client_id               = format("swz_auth_identity_pool_%s", local.environment)
-    provider_name           = aws_cognito_user_pool.swz_auth_pool.endpoint
-    server_side_token_check = false
-  }
-
-  tags = local.tags
-}
-
 resource "aws_cognito_user_pool_domain" "swz_auth_pool_domain" {
   domain          = format("auth.%s", var.domain_name)
   user_pool_id    = aws_cognito_user_pool.swz_auth_pool.id
@@ -38,12 +25,14 @@ resource "aws_cognito_resource_server" "swz_news_auth_pool_resource_server" {
 resource "aws_cognito_user_pool_client" "swz_auth_pool_client" {
   name = format("swz-news-client-%s", local.environment)
 
+  supported_identity_providers         = ["COGNITO"]
   user_pool_id                         = aws_cognito_user_pool.swz_auth_pool.id
   generate_secret                      = true
   refresh_token_validity               = 7
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_flows                  = ["client_credentials"]
   allowed_oauth_scopes                 = ["news/write"]
+  explicit_auth_flows                  = ["ADMIN_NO_SRP_AUTH"]
   depends_on = [aws_cognito_resource_server.swz_news_auth_pool_resource_server]
 }
 
