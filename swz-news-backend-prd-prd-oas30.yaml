@@ -1,0 +1,58 @@
+openapi: "3.0.1"
+info:
+  title: "swz-news-backend-prd"
+  version: "2021-01-20T08:30:54Z"
+servers:
+- url: "https://api.swz.paiva.info"
+paths:
+  /news/{slug}:
+    get:
+      parameters:
+      - name: "slug"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    options:
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /news:
+    get: {}
+    post:
+      security:
+      - 1_NzjxpoVzh:
+        - "news/write"
+    options:
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+components:
+  securitySchemes:
+    1_NzjxpoVzh:
+      type: "apiKey"
+      name: "Authorization"
+      in: "header"
+      x-amazon-apigateway-authtype: "cognito_user_pools"

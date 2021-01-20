@@ -155,3 +155,7 @@ which provides a great cache layer for GET requests, and it has SQS for writing 
 
 SQS doesn't improve writing speed to the database, but it provides a great application decoupling, and a
 CQRS approach for future developments. 
+
+## API Documentation
+
+[OpenAPI](swz-news-backend-prd-prd-oas30.yaml)
