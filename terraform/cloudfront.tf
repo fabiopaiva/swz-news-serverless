@@ -52,7 +52,7 @@ resource "aws_cloudfront_distribution" "news_website" {
   restrictions {
     geo_restriction {
       restriction_type = "whitelist"
-      locations        = ["NL", "DE"]
+      locations        = ["NL"]
     }
   }
 
