@@ -250,3 +250,8 @@ resource "aws_iam_role_policy" "serverless_function_news_kms_policy" {
   role   = aws_iam_role.serverless_function_news_role.id
   policy = data.aws_iam_policy_document.kms_key_access.json
 }
+
+resource "aws_iam_role_policy_attachment" "serverless_funcion_news_lambda_insights" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
+  role = aws_iam_role.serverless_function_news_role.id
+}

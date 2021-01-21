@@ -30,6 +30,7 @@ functions:
             enabled: true
     environment:
       NEWS_TABLE_NAME: ${self:custom.dynamodbNewsTableName}
+    provisionedConcurrency: 10
   getNewsItem:
     role: ${self:custom.lambdaNewsIam}
     handler: handler.getNewsItem
@@ -44,6 +45,7 @@ functions:
               - name: request.path.slug
     environment:
       NEWS_TABLE_NAME: ${self:custom.dynamodbNewsTableName}
+    provisionedConcurrency: 10
   postNews:
     role: ${self:custom.lambdaNewsIam}
     handler: handler.postNews
